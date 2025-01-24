@@ -1,33 +1,16 @@
 // Wait for the document to fully load
 document.addEventListener('DOMContentLoaded', function() {
-    // Select the div with class 'download-links'
-    let downloadLinksDiv = document.querySelector('.download-links');
-
-    // Check if the div exists
-    if (downloadLinksDiv) {
-        // Find the anchor or text node that contains 'ACT Certification'
-        let actCertificationLink = Array.from(downloadLinksDiv.querySelectorAll('a, span'))
-            .find(el => el.textContent.includes('ACT Certification'));
-
-        // If the 'ACT Certification' text is found, remove the element
-        if (actCertificationLink) {
-            actCertificationLink.remove();  // Remove the element from the DOM
-            console.log('ACT Certification link removed.');
-        } else {
-            console.log('ACT Certification link not found.');
-        }
-    } else {
-        console.log('Download links div not found.');
-    }
-
     // Define the list of keywords to check in the URL
-    const keywords = ["Aura", "Nuance", "Halo", "Solstice", "Sonata", "Linen", "Striae", "Meadow", "Stride", "Midtown", "Trellis", "Motley"];
+    const keywords = ["Aura", "Nuance", "Halo", "Solstice", "Sonata", "Linen", "Striae", "Meadow", "Stride", "Midtown", "Trellis", "Motley", "Dune"];
 
     // Get the current page URL
     const currentURL = window.location.href;
 
-    // Check if the URL contains any of the keywords
-    const keywordFound = keywords.some(keyword => currentURL.includes(keyword));
+    // Split the URL into segments and check each segment for keywords
+    const urlSegments = currentURL.split(/[\/\-]/); // Split by slashes and dashes
+
+    // Check if any keyword is present in the URL segments
+    const keywordFound = keywords.some(keyword => urlSegments.includes(keyword.toLowerCase()));
 
     if (keywordFound) {
         console.log('A keyword from the list was found in the URL.');

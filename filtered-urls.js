@@ -1,30 +1,37 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const form = document.querySelector('form.education-filters');
-  if (!form) return;
+  const categorySelect = document.querySelector('#filter-category');
+  const systemSelect   = document.querySelector('#filter-system');
+  const params = new URLSearchParams(window.location.search);
 
-  // Apply query parameters to form inputs on page load
-  const urlParams = new URLSearchParams(window.location.search);
-  for (const [key, value] of urlParams.entries()) {
-    const input = form.querySelector(`[name="${key}"]`);
-    if (input) input.value = value;
+  // Pre-select based on query string
+  if (params.has('category') && categorySelect) {
+    categorySelect.value = params.get('category');
+  }
+  if (params.has('system') && systemSelect) {
+    systemSelect.value = params.get('system');
   }
 
-  // Trigger the filter (Avada likely uses AJAX or form submit)
-  if (urlParams.toString()) {
-    const submitBtn = form.querySelector('button[type="submit"]');
-    if (submitBtn) submitBtn.click();
-  }
-
-  // Update URL when filters change
-  form.addEventListener('change', () => {
-    const formData = new FormData(form);
-    const params = new URLSearchParams();
-
-    for (const [key, value] of formData.entries()) {
-      if (value) params.set(key, value);
+  // Trigger Avada filter update if needed
+  const applyFilters = () => {
+    // Replace this with the site's actual filter function
+    if (typeof fusionFilterUpdate === 'function') {
+      fusionFilterUpdate();
     }
+  };
 
-    const newUrl = `${window.location.pathname}?${params.toString()}`;
-    window.location.href = newUrl; // full reload to trigger filter results
+  if (params.has('category') || params.has('system')) {
+    applyFilters();
+  }
+
+  // Listen for user changes
+  [categorySelect, systemSelect].forEach(select => {
+    if (!select) return;
+    select.addEventListener('change', () => {
+      const q = new URLSearchParams();
+      if (categorySelect.value) q.set('category', categorySelect.value);
+      if (systemSelect.value)   q.set('system', systemSelect.value);
+
+      window.location.href = `${window.location.pathname}?${q.toString()}`;
+    });
   });
 });

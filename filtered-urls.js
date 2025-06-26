@@ -1,21 +1,49 @@
+<script>
 jQuery(document).ready(function ($) {
-  const $category = $('#filter-category');
-  const $system = $('#filter-system');
+  const $categorySelect = $('#filter-category');
+  const $systemSelect = $('#filter-system');
 
-  if (!$category.length || !$system.length) return;
+  if (!$categorySelect.length || !$systemSelect.length) return;
 
   const params = new URLSearchParams(window.location.search);
+  let updated = false;
 
-  if (params.has('category')) $category.val(params.get('category'));
-  if (params.has('system')) $system.val(params.get('system'));
-
-  function updateURL() {
-    const newParams = new URLSearchParams();
-    newParams.set('category', $category.val() || 'select');
-    newParams.set('system', $system.val() || 'select');
-    window.location.href = `${window.location.pathname}?${newParams.toString()}`;
+  // Set default parameters if missing
+  if (!params.has('category')) {
+    params.set('category', 'select');
+    updated = true;
   }
 
-  $category.on('change', updateURL);
-  $system.on('change', updateURL);
+  if (!params.has('system')) {
+    params.set('system', 'select');
+    updated = true;
+  }
+
+  // Push default params to URL without reloading
+  if (updated) {
+    const newUrl = `${window.location.pathname}?${params.toString()}`;
+    history.replaceState({}, '', newUrl);
+  }
+
+  // Set selects based on current URL
+  $categorySelect.val(params.get('category'));
+  $systemSelect.val(params.get('system'));
+
+  // Trigger filtering
+  $categorySelect.trigger('change');
+  $systemSelect.trigger('change');
+
+  // Update URL when dropdowns change
+  function updateURL() {
+    const newParams = new URLSearchParams(window.location.search);
+    newParams.set('category', $categorySelect.val() || 'select');
+    newParams.set('system', $systemSelect.val() || 'select');
+
+    const newUrl = `${window.location.pathname}?${newParams.toString()}`;
+    history.replaceState({}, '', newUrl);
+  }
+
+  $categorySelect.on('change', updateURL);
+  $systemSelect.on('change', updateURL);
 });
+</script>
